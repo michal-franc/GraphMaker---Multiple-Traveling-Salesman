@@ -60,7 +60,7 @@
     <form id="form1" runat="server" style="height:100%">
     <div id="silverlightControlHost">
         <object data="data:application/x-silverlight-2," type="application/x-silverlight-2" width="100%" height="100%">
-		  <param name="source" value="ClientBin/GraphMaker.xap"/>
+		  <param name="source" value="ClientBin/GraphMaker.xap?ignoreme=<%=System.DateTime.Now.ToUniversalTime()%>"/>
 		  <param name="onError" value="onSilverlightError" />
 		  <param name="background" value="white" />
 		  <param name="minRuntimeVersion" value="3.0.40818.0" />

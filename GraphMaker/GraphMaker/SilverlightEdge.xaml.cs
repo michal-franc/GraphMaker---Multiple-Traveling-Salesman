@@ -15,6 +15,16 @@ namespace GraphMaker
 {
     public partial class SilverlightEdge : UserControl
     {
+        private List<double> _distances = new List<double>();
+
+        public List<double> Distances
+        {
+            get
+            {
+                return _distances;
+            }
+        }
+      
         private int _edgeNumber;
 
         public int EdgeNumber

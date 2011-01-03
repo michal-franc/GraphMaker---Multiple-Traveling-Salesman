@@ -9,6 +9,9 @@
         <Canvas x:Name="LayoutRoot" Background="White" MouseLeftButtonDown="LayoutRoot_MouseLeftButtonDown" Margin="0,0,0,26">
         </Canvas>
         <Button  Content="Clear" Height="22" Name="btnClear" Width="75" Click="btnClear_Click" Margin="12,478,414,0" />
-        <Button Content="Generate Random" Height="23" HorizontalAlignment="Left" Margin="93,477,0,0" Name="button1" VerticalAlignment="Top" Width="116" />
+        <Button Content="Generate Random" Height="23" HorizontalAlignment="Left" Margin="93,477,0,0" Name="button1" VerticalAlignment="Top" Width="116" Click="button1_Click" />
+        <Button Content="Calculate Dist" Height="23" HorizontalAlignment="Left" Margin="221,477,0,0" Name="btnCalcDist" VerticalAlignment="Top" Width="116" Click="btnCalcDist_Click" />
+        <Button Content="Next" Height="23" HorizontalAlignment="Left" Margin="342,477,0,0" Name="btnNext" VerticalAlignment="Top" Width="75" Click="btnNext_Click" />
+        <Button Content="Best" Height="23" HorizontalAlignment="Right" Margin="0,477,4,0" Name="btnBest" VerticalAlignment="Top" Width="75" />
     </Grid>
 </UserControl>

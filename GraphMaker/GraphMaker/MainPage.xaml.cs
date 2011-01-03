@@ -10,12 +10,15 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using GraphMaker.Objects;
+using GraphMaker.TFSAlgorithm;
 
 namespace GraphMaker
 {
     public partial class MainPage : UserControl
     {
         private List<Edge> _edges = new List<Edge>();
+
+        List<SilverlightEdge> edges;
 
         private int edgeCounter = 0;
         SilverlightEdge _edge1;
@@ -178,7 +181,62 @@ namespace GraphMaker
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
+            //Iterujemy po edgach i tworzymy Vertice
+        }
 
+        private void btnCalcDist_Click(object sender, RoutedEventArgs e)
+        {
+            edges = new List<SilverlightEdge>();
+            foreach (SilverlightEdge edge in this.LayoutRoot.Children)
+            {
+                foreach (SilverlightEdge edge1 in this.LayoutRoot.Children)
+                 {
+                    double distance = 0.0;
+                    distance = Math.Sqrt(Math.Pow(edge.Position.X - edge1.Position.X, 2)+Math.Pow(edge.Position.Y-edge1.Position.Y,2));
+                    edge.Distances.Add(distance);
+                }
+                edges.Add(edge);
+            }
+           List<int> order =  SimulatedAnnealing.CalculateInit(edges);
+           DrawLines(order);
+        }
+
+        private void btnNext_Click(object sender, RoutedEventArgs e)
+        {
+            List<int> order = SimulatedAnnealing.CalculateNext(100);
+            ClearLines();
+            DrawLines(order);
+
+        }
+
+        private void ClearLines()
+        {
+            List<Line> lines = new List<Line>();
+            foreach (UIElement element in this.LayoutRoot.Children)
+            {
+                Line line = element as Line;
+                if (line !=null)
+                {
+                    lines.Add(line);
+                }
+            }
+
+            foreach (UIElement l in lines)
+            {
+                this.LayoutRoot.Children.Remove(l);
+            }
+        }
+
+        private void DrawLines(List<int> order)
+        {
+            for(int i=0;i<order.Count-1;i++)
+            {
+                SilverlightVertice vertice = new SilverlightVertice(edges[order[i]].Position, edges[order[i+1]].Position);
+                this.LayoutRoot.Children.Add(vertice.Line);
+            }
+
+            SilverlightVertice vertice1 = new SilverlightVertice(edges[order[order.Count-1]].Position, edges[order[0]].Position);
+            this.LayoutRoot.Children.Add(vertice1.Line);
         }
     }
 }

@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Algorithm
+namespace TFSAlgorithm
 {
-    class Program
+    public class SimulatedAnnealing
     {
-        static void Main(string[] args)
-        {
-        }
     }
 }

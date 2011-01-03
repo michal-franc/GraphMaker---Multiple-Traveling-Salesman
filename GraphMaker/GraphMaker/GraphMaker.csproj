@@ -85,6 +85,7 @@
     <Compile Include="SilverlightEdge.xaml.cs">
       <DependentUpon>SilverlightEdge.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TFSAlgorithm\SimulatedAnnealing.cs" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -119,4 +120,7 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(TargetDir)GraphMaker.xap" "$(SolutionDir)GraphMaker.Web\ClientBin"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

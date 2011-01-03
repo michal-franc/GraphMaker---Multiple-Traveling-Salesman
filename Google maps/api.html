@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<style type="text/css">
+  html { height: 100% }
+  body { height: 100%; margin: 0px; padding: 0px }
+  #map_canvas { height: 100% }
+</style>
+<script type="text/javascript"
+    src="http://maps.google.com/maps/api/js?sensor=false">
+</script>
+<script type="text/javascript">
+
+var points = [];
+var map ;
+  function  Point2D() {
+  this.x = 0;
+  this.y = 0;  
+}  
+
+  function initialize() {
+  
+    var latlng = new google.maps.LatLng(51.1, 17.0333333);
+    var myOptions = {
+      zoom: 12,
+      center: latlng,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    map = new google.maps.Map(document.getElementById("map_canvas"),
+        myOptions);
+			  
+				google.maps.event.addListener(map, 'click', function(event) {
+				var latlng = event.latLng;
+				points[points.length] = event.latLng;
+				var marker = new google.maps.Marker({
+				position: latlng, 
+				map: map,
+				title: "Wroclaw"
+			});   
+    });
+  }
+     
+   function CalculateXY(point,xScale,yScale)
+   {
+			// convert lat/long to radians
+			latitude = Math.PI * point.lat() / 180;
+			longitude = Math.PI * point.lng() / 180;
+			
+			alert(' latitude= '  + latitude  + '  longitude= ' + longitude);
+			
+			// adjust position by radians
+			latitude =  latitude - 1.570795765134; // subtract 90 degrees (in radians)
+			
+			
+			// and switch z and y 
+			xPos = (3947) * Math.sin(latitude) * Math.cos(longitude);
+			zPos = (3947) * Math.sin(latitude) * Math.sin(longitude);
+			yPos = (3947) * Math.cos(latitude);
+			
+			alert(' xPos = '  + xPos  + '  zPos = ' + zPos + ' yPos = ' + yPos);
+			
+			focal_length = 200;
+			
+			projected_x = xPos * focal_length / (focal_length + zPos);
+			projected_y = yPos * focal_length / (focal_length + zPos);
+			
+			
+			alert(' projected_x = '  + projected_x  + '  projected_y = ' +projected_y);
+   
+			var point2D = new Point2D();
+			point2D.x = projected_x;
+			point2D.y = projected_y;
+			return point2D;
+   }
+   
+   function OnClick() {
+   
+   		var example = document.getElementById('example');
+		
+		var context = example.getContext('2d');
+		context.fillStyle = "rgb(255,0,0)";
+		
+		var zakres = map.getBounds();
+		//Todo blad z zakresem ujemnym
+		var xScale =zakres.getNorthEast().lat()-zakres.getSouthWest().lat();
+		var yScale =zakres.getNorthEast().lng()-zakres.getSouthWest().lng();
+		
+		//alert(xScale);
+		//alert(yScale);
+		
+		for(i=0;i<points.length;i++)
+		{		 
+		 var p = CalculateXY(points[i],xScale,yScale);
+		alert('punkt :  x = '  + p.x  + '  y = ' + p.y);
+		context.fillRect( p.x,  p.y, 5, 5);
+		}
+   }
+   
+   function ClearOnClick(){
+			//Todo Czyszczenie 	
+   }
+
+</script>
+</head>
+<body onload="initialize()">
+
+  <div id="map_canvas" style="width:100%; height:100%"></div>
+	<div>
+	  <input type="checkbox" name="debug" value="debug?">debug Y/N</input>
+	</div>
+	<div>
+	  <input type="button"  value="Calculate" onclick="OnClick()"/>
+	  <input type="button" value="Clear" oncllick="ClearOnClick()"/>
+	</div>
+	  <canvas id="example" width="200" height="200">
+	This text is displayed if your browser does not support HTML5 Canvas.
+	</canvas>
+
+</body>
+</html>

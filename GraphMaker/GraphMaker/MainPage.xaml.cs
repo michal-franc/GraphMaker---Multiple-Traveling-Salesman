@@ -17,7 +17,7 @@ namespace GraphMaker
     {
         private List<Edge> _edges = new List<Edge>();
 
-        private int counter = 0;
+        private int edgeCounter = 0;
         SilverlightEdge _edge1;
         SilverlightEdge _edge2;
         private bool _oneSelected=false;
@@ -56,11 +56,11 @@ namespace GraphMaker
         {
             if ((ModifierKeys.Control & Keyboard.Modifiers) != 0) 
             {
-                counter++;
+                edgeCounter++;
                 UIElement element = sender as UIElement;
                 Point p = e.GetPosition(element);
 
-                AddNewEdge(p, counter);
+                AddNewEdge(p, edgeCounter);
             }
         }
 
@@ -87,7 +87,6 @@ namespace GraphMaker
                     AddNewVertice(_edge1, _edge2);
                 }
             }
-
         }
 
         private void ReorderEdges(int reorderNumber)
@@ -101,9 +100,9 @@ namespace GraphMaker
 
                 }
             }
-            if (counter > 0)
+            if (edgeCounter > 0)
             {
-                counter--;
+                edgeCounter--;
             }
         }
 
@@ -118,6 +117,7 @@ namespace GraphMaker
             else
             {
                 TextBox textBox = new TextBox();
+                textBox.Tag = line.Tag;
                 textBox.Width = 30;
                 textBox.Height = 20;
 
@@ -151,8 +151,15 @@ namespace GraphMaker
             {
                 Label lbl = new Label();
                 lbl.Content = box.Text;
+                 SilverlightVertice vertice  = box.Tag as SilverlightVertice;
+
+                 if (vertice != null)
+                 {
+                     vertice.Weight = int.Parse(box.Text);
+                 }
+
                 lbl.Foreground = new SolidColorBrush(Color.FromArgb((byte)255,(byte)255,(byte)0,(byte)0));
-                lbl.FontSize = 15;
+                lbl.FontSize = 9;
                 lbl.Width = 20;
                 lbl.Height = 20;
                 lbl.SetValue(Canvas.LeftProperty, (double)box.GetValue(Canvas.LeftProperty)+5);
@@ -165,7 +172,13 @@ namespace GraphMaker
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
+            edgeCounter = 0;
             this.LayoutRoot.Children.Clear();
+        }
+
+        private void button1_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

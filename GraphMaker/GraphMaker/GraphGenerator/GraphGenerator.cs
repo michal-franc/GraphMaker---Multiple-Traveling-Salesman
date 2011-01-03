@@ -26,10 +26,5 @@ namespace GraphMaker.GraphGenerator
         {
             GraphGenerator.Edges = edges;
         }
-
-        public static void FindBestRoute(IRouteMaker routeMaker)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

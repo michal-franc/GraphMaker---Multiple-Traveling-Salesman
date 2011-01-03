@@ -8,6 +8,7 @@
     <Grid>
         <Canvas x:Name="LayoutRoot" Background="White" MouseLeftButtonDown="LayoutRoot_MouseLeftButtonDown" Margin="0,0,0,26">
         </Canvas>
-        <Button  Content="Clear" Height="22" Name="btnClear" Width="75" Click="btnClear_Click" Margin="213,478,211,0" />
+        <Button  Content="Clear" Height="22" Name="btnClear" Width="75" Click="btnClear_Click" Margin="12,478,414,0" />
+        <Button Content="Generate Random" Height="23" HorizontalAlignment="Left" Margin="93,477,0,0" Name="button1" VerticalAlignment="Top" Width="116" />
     </Grid>
 </UserControl>

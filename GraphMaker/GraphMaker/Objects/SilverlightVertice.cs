@@ -14,11 +14,15 @@ namespace GraphMaker.Objects
     public class SilverlightVertice
     {
 
+        public int Weight { get; set; }
+
         public SilverlightVertice(Point p1,Point p2)
         {
             Line = new Line();
             Line.SetValue(Canvas.ZIndexProperty, 0);
             Line.Stroke = new SolidColorBrush() { Color = Color.FromArgb((byte)255, (byte)0, (byte)0, (byte)255) };
+
+            Line.Tag = this;
 
             Line.X1 = p1.X + 10;
             Line.Y1 = p1.Y + 10;

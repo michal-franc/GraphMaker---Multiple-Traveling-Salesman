@@ -36,39 +36,122 @@ namespace GraphMaker.TFSAlgorithm
         //groups from which the metric to be minimized can be calculated.
         //Table 1 and Fig. 2 show the results, after applying �-means clustering
 
-        public List<Cluster> CreateClusters(List<Point> points, int nrOfClusters)
+        public List<Cluster> CreateClusters(List<SilverlightEdge> edges, int nrOfClusters)
         {
-
-            CalculateBoundaries(points);
-            CalculateRadius();
-
-            double deegreStep = 360.0 / nrOfClusters;
-
-
             List<Cluster> returnCluster = new List<Cluster>();
+
+            CalculateBoundaries(edges);
+            CalculateRadius();
+            returnCluster = InitialClusters(edges, nrOfClusters);
+            while (RecalculateClusters(edges, ref returnCluster) == false)
+            {
+
+            }
+
+            return returnCluster;
+        }
+
+        private bool RecalculateClusters(List<SilverlightEdge> edges,ref List<Cluster> returnCluster)
+        {
+            bool more = false;
+
+            foreach (Cluster cluster in returnCluster)
+            {
+                double averagedX = 0.0;
+                double averagedY = 0.0;
+
+                foreach (SilverlightEdge edge in cluster.Edges)
+                {
+                    averagedX += edge.Position.X;
+                    averagedY += edge.Position.Y;
+                }
+
+                averagedX = averagedX / cluster.Edges.Count;
+                averagedY = averagedY / cluster.Edges.Count;
+
+                Point newPoint = new Point(averagedX,averagedY);
+
+                if (newPoint.CalculateDistance(cluster.ClusterCenter) > 0.1)
+                {
+                    cluster.ClusterCenter = new Point(averagedX, averagedY);
+                    more = true;
+                }
+            }
+
+            foreach (Cluster cluster in returnCluster)
+            {
+                cluster.Edges.Clear();
+            }
+
+            foreach (SilverlightEdge edge in edges)
+            {
+                double distance = double.MaxValue;
+                Cluster bestCluster = null;
+                foreach (Cluster cluster in returnCluster)
+                {
+                    double newDistance = edge.Position.CalculateDistance(cluster.ClusterCenter);
+                    if (newDistance < distance)
+                    {
+                        bestCluster = cluster;
+                        distance = newDistance;
+                    }
+                }
+
+                if (bestCluster != null)
+                {
+                    bestCluster.Edges.Add(edge);
+                }
+            }
+
+            return more;
+        }
+
+        private List<Cluster> InitialClusters(List<SilverlightEdge> edges, int nrOfClusters)
+        {
+            List<Cluster> returnCluster = new List<Cluster>();
+            double deegreStep = 360.0 / nrOfClusters;
 
             for (int i = 0; i < nrOfClusters; i++)
             {
 
-                double step = deegreStep/2 + i * deegreStep;
+                double step = deegreStep / 2 + i * deegreStep;
 
                 double newX = CenterPoint.X + Radius * (Math.Cos(step * 0.0174532925));
                 double newY = CenterPoint.Y - Radius * (Math.Sin(step * 0.0174532925));
 
-                returnCluster.Add(new Cluster(new Point(newX,newY)));
+                returnCluster.Add(new Cluster(new Point(newX, newY)));
+            }
+
+            foreach (SilverlightEdge edge in edges)
+            {
+                double distance = double.MaxValue;
+                Cluster bestCluster = null;
+                foreach (Cluster cluster in returnCluster)
+                {
+                    double newDistance = edge.Position.CalculateDistance(cluster.ClusterCenter);
+                    if (newDistance < distance)
+                    {
+                        bestCluster = cluster;
+                        distance = newDistance;
+                    }
+                }
+
+                if (bestCluster != null)
+                {
+                    bestCluster.Edges.Add(edge);
+                }
             }
 
             return returnCluster;
-
         }
 
-        private void CalculateBoundaries(List<Point> points)
+        private void CalculateBoundaries(List<SilverlightEdge> edges)
         {
-            MaxX = points.Max(x => x.X);
-            MinX = points.Min(x => x.X);
+            MaxX = edges.Max(x => x.Position.X);
+            MinX = edges.Min(x => x.Position.X);
             LengthX = MaxX - MinX;
-            MaxY = points.Max(x => x.Y);
-            MinY = points.Min(x => x.Y);
+            MaxY = edges.Max(x => x.Position.Y);
+            MinY = edges.Min(x => x.Position.Y);
             LengthY = MaxY-MinY;
 
             CenterPoint = new Point((MinX + MaxX) / 2, (MaxY + MinY) / 2);

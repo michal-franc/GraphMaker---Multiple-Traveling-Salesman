@@ -16,14 +16,27 @@ namespace GraphMaker
 {
     public partial class MainPage : UserControl
     {
+
+        public int NrOfSalesmans
+        {
+            get
+            {
+                return int.Parse(txtBoxIloscK.Text);
+            }
+        }
+
         private List<Edge> _edges = new List<Edge>();
 
-        List<SilverlightEdge> edges;
+        List<SilverlightEdge> _slEdges = new List<SilverlightEdge>();
 
         private int edgeCounter = 0;
         SilverlightEdge _edge1;
         SilverlightEdge _edge2;
         private bool _oneSelected=false;
+
+        SimulatedAnnealing annealingForOne;
+
+        private List<Cluster> Clusters; 
 
        public MainPage()
         {
@@ -40,6 +53,7 @@ namespace GraphMaker
            edge.Edge = newEdge;
 
            _edges.Add(newEdge);
+           _slEdges.Add(edge);
        }
 
        private void AddNewVertice(SilverlightEdge edge1, SilverlightEdge edge2)
@@ -186,26 +200,58 @@ namespace GraphMaker
 
         private void btnCalcDist_Click(object sender, RoutedEventArgs e)
         {
-            edges = new List<SilverlightEdge>();
-            foreach (SilverlightEdge edge in this.LayoutRoot.Children)
+            if (NrOfSalesmans <= 1)
             {
-                foreach (SilverlightEdge edge1 in this.LayoutRoot.Children)
-                 {
-                    double distance = 0.0;
-                    distance = Math.Sqrt(Math.Pow(edge.Position.X - edge1.Position.X, 2)+Math.Pow(edge.Position.Y-edge1.Position.Y,2));
-                    edge.Distances.Add(distance);
+                foreach (SilverlightEdge edge in _slEdges)
+                {
+                    foreach (SilverlightEdge edge1 in _slEdges)
+                    {
+                        edge.Distances.Add(edge.Position.CalculateDistance(edge1.Position));
+                    }
                 }
-                edges.Add(edge);
+                annealingForOne = new SimulatedAnnealing();
+                List<int> order = annealingForOne.CalculateInit(_slEdges);
+                DrawLines(order);
             }
-           List<int> order =  SimulatedAnnealing.CalculateInit(edges);
-           DrawLines(order);
+            else
+            {
+                Clusters = CreateAreas();
+
+                foreach (Cluster clust in Clusters)
+               {
+                   foreach (SilverlightEdge edge in clust.Edges)
+                   {
+                       foreach (SilverlightEdge edge1 in clust.Edges)
+                       {
+                           edge.Distances.Add(edge.Position.CalculateDistance(edge1.Position));
+                       }
+                   }
+
+                   List<int> order = clust.Annealing.CalculateInit(clust.Edges);
+                   DrawLines(order,clust.Edges);
+               }
+
+            }
+
         }
 
         private void btnNext_Click(object sender, RoutedEventArgs e)
         {
-            List<int> order = SimulatedAnnealing.CalculateNext(100);
             ClearLines();
-            DrawLines(order);
+            if (NrOfSalesmans <= 1)
+            {
+                List<int> order = annealingForOne.CalculateNext(100);        
+                DrawLines(order);
+            }
+            else
+            {
+                foreach (Cluster clust in Clusters)
+                {
+                    List<int> order = clust.Annealing.CalculateNext(100);
+                    DrawLines(order, clust.Edges);
+                }
+
+            }
 
         }
 
@@ -231,12 +277,50 @@ namespace GraphMaker
         {
             for(int i=0;i<order.Count-1;i++)
             {
-                SilverlightVertice vertice = new SilverlightVertice(edges[order[i]].Position, edges[order[i+1]].Position);
+                SilverlightVertice vertice = new SilverlightVertice(_slEdges[order[i]].Position, _slEdges[order[i + 1]].Position);
                 this.LayoutRoot.Children.Add(vertice.Line);
             }
 
-            SilverlightVertice vertice1 = new SilverlightVertice(edges[order[order.Count-1]].Position, edges[order[0]].Position);
+            SilverlightVertice vertice1 = new SilverlightVertice(_slEdges[order[order.Count - 1]].Position, _slEdges[order[0]].Position);
             this.LayoutRoot.Children.Add(vertice1.Line);
+        }
+
+        private void DrawLines(List<int> order,List<SilverlightEdge> edges)
+        {
+            for (int i = 0; i < order.Count - 1; i++)
+            {
+                SilverlightVertice vertice = new SilverlightVertice(edges[order[i]].Position, edges[order[i + 1]].Position);
+                this.LayoutRoot.Children.Add(vertice.Line);
+            }
+
+            SilverlightVertice vertice1 = new SilverlightVertice(edges[order[order.Count - 1]].Position, edges[order[0]].Position);
+            this.LayoutRoot.Children.Add(vertice1.Line);
+        }
+
+
+        private List<Cluster> CreateAreas()
+        {
+
+            KMeanClustering clusteringAlgorithm = new KMeanClustering();
+
+            List<Cluster> clusters = clusteringAlgorithm.CreateClusters(_slEdges, 4);
+            int counter =0;
+            foreach(Cluster clust in clusters)
+            {
+                counter++;
+                Label lbl =new Label();
+                lbl.Foreground = new SolidColorBrush(Color.FromArgb(255,0,255,0));
+                lbl.FontSize = 15;
+                lbl.Width = 20;
+                lbl.Height = 20;
+                lbl.Content = counter.ToString();
+                lbl.SetValue(Canvas.LeftProperty, clust.ClusterCenter.X);
+                lbl.SetValue(Canvas.TopProperty, clust.ClusterCenter.Y);
+                lbl.SetValue(Canvas.ZIndexProperty, 2);
+                this.LayoutRoot.Children.Add(lbl);
+            }
+
+            return clusters;
         }
     }
 }

@@ -12,24 +12,24 @@ using System.Collections.Generic;
 
 namespace GraphMaker.TFSAlgorithm
 {
-    public static class SimulatedAnnealing
+    public  class SimulatedAnnealing
     {
-        private static int EdgesCount { get; set; }
-        private static double Proba { get; set; }
-        private static double Alpha {get;set;}
-        private static double Temperature { get; set; }
-        private static double Epsilon { get; set; }
-        private static double Delta { get; set; }
-        private static double CurrentDistance { get; set; }
+        private  int EdgesCount { get; set; }
+        private  double Proba { get; set; }
+        private  double Alpha {get;set;}
+        private  double Temperature { get; set; }
+        private  double Epsilon { get; set; }
+        private  double Delta { get; set; }
+        private  double CurrentDistance { get; set; }
 
-        private static Random rand = new Random(DateTime.Now.Millisecond);
+        private  Random rand = new Random(DateTime.Now.Millisecond);
 
-        private static List<int> currentOrder = new List<int>();
-        private static List<int> nextOrder = new List<int>();
+        private  List<int> currentOrder = new List<int>();
+        private  List<int> nextOrder = new List<int>();
 
-        private static List<SilverlightEdge> _edges;
+        private  List<SilverlightEdge> _edges;
  
-        public static List<int>  CalculateInit(List<SilverlightEdge> current)
+        public  List<int>  CalculateInit(List<SilverlightEdge> current)
         {
             EdgesCount = current.Count;
             _edges = current;
@@ -48,7 +48,7 @@ namespace GraphMaker.TFSAlgorithm
             return currentOrder;
         }
 
-        public static List<int> CalculateNext(int i)
+        public  List<int> CalculateNext(int i)
         {
             int iteration= 0;
             double delta = 0.0;
@@ -84,7 +84,7 @@ namespace GraphMaker.TFSAlgorithm
             return currentOrder;
         }
 
-        private static void Copy(List<int> currentOrder, List<int> nextOrder)
+        private  void Copy(List<int> currentOrder, List<int> nextOrder)
         {
             currentOrder.Clear();
 
@@ -94,7 +94,7 @@ namespace GraphMaker.TFSAlgorithm
             }
         }
 
-        private static void CreateRandomOrder()
+        private  void CreateRandomOrder()
         {
             nextOrder.Clear();
 
@@ -110,7 +110,7 @@ namespace GraphMaker.TFSAlgorithm
             nextOrder[i2] = aux;
         }
 
-        private static double CalculateDistance(List<int> order, List<SilverlightEdge> current)
+        private  double CalculateDistance(List<int> order, List<SilverlightEdge> current)
         {
 
             double distance = 0.0;

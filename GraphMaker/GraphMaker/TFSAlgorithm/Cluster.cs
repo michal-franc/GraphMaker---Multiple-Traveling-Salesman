@@ -14,13 +14,15 @@ namespace GraphMaker.TFSAlgorithm
 {
     public class Cluster
     {
-        public List<Point> Points { get; set; }
+        public List<SilverlightEdge> Edges { get; set; }
         public Point ClusterCenter { get; set; }
+        public SimulatedAnnealing  Annealing {get;set;}
 
         public Cluster(Point center)
         {
-            Points = new List<Point>();
+            Edges = new List<SilverlightEdge>();
             ClusterCenter = center;
+            Annealing = new SimulatedAnnealing();
         }
     }
 }

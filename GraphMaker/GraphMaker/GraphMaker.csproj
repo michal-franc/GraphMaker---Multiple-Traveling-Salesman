@@ -74,6 +74,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common.cs" />
     <Compile Include="GraphGenerator\GraphGenerator.cs" />
     <Compile Include="Objects\Edge.cs" />
     <Compile Include="MainPage.xaml.cs">
@@ -85,6 +86,8 @@
     <Compile Include="SilverlightEdge.xaml.cs">
       <DependentUpon>SilverlightEdge.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TFSAlgorithm\Cluster.cs" />
+    <Compile Include="TFSAlgorithm\KMeanClustering.cs" />
     <Compile Include="TFSAlgorithm\SimulatedAnnealing.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -215,7 +215,7 @@ namespace GraphMaker
             }
             else
             {
-                Clusters = CreateAreas();
+                Clusters = CreateAreas(NrOfSalesmans);
 
                 foreach (Cluster clust in Clusters)
                {
@@ -298,12 +298,12 @@ namespace GraphMaker
         }
 
 
-        private List<Cluster> CreateAreas()
+        private List<Cluster> CreateAreas(int nrOfClusters)
         {
 
             KMeanClustering clusteringAlgorithm = new KMeanClustering();
 
-            List<Cluster> clusters = clusteringAlgorithm.CreateClusters(_slEdges, 4);
+            List<Cluster> clusters = clusteringAlgorithm.CreateClusters(_slEdges, nrOfClusters);
             int counter =0;
             foreach(Cluster clust in clusters)
             {

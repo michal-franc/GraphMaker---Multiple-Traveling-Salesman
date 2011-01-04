@@ -48,6 +48,14 @@ namespace GraphMaker.TFSAlgorithm
 
             }
 
+
+            SilverlightEdge centralEdge = GetCentralEdge(edges);
+
+            foreach (Cluster c in returnCluster)
+            {
+                if(!c.Edges.Contains(centralEdge))
+                    c.Edges.Add(centralEdge);
+            }
             return returnCluster;
         }
 
@@ -167,6 +175,26 @@ namespace GraphMaker.TFSAlgorithm
             {
                 Radius = MaxX - CenterPoint.X;
             }
+        }
+
+        private SilverlightEdge GetCentralEdge(List<SilverlightEdge> edges)
+        {
+            SilverlightEdge bestEdge = null;
+
+            double distance = double.MaxValue;
+
+            foreach (SilverlightEdge edge in edges)
+            {
+                double newDistance = edge.Position.CalculateDistance(CenterPoint);
+                if (newDistance < distance)
+                {
+                    bestEdge = edge;
+                    distance = newDistance;
+                }
+            }
+
+
+            return bestEdge;
         }
 
     }

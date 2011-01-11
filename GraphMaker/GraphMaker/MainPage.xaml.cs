@@ -193,9 +193,20 @@ namespace GraphMaker
             this.LayoutRoot.Children.Clear();
         }
 
-        private void button1_Click(object sender, RoutedEventArgs e)
+        private void btnGenerateRandom_Click(object sender, RoutedEventArgs e)
         {
-            //Iterujemy po edgach i tworzymy Vertice
+            //1. Create random generator
+            Random rand = new Random(DateTime.Now.Millisecond);
+            for (int i = 0; i < 100; i++)
+            {
+                edgeCounter++;
+                double x = rand.NextDouble() * 800;
+                double y = rand.NextDouble() * 500;
+                Point location = new Point(x, y);
+                AddNewEdge(location, edgeCounter);
+                //2. Create edge in random location in x y.
+            }
+
         }
 
         private void btnCalcDist_Click(object sender, RoutedEventArgs e)

@@ -4,16 +4,23 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    d:DesignHeight="500" d:DesignWidth="500" Width="500" Height="500" xmlns:dataInput="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Data.Input">
-    <Grid Height="500">
-        <Canvas x:Name="LayoutRoot" Background="White" MouseLeftButtonDown="LayoutRoot_MouseLeftButtonDown" Margin="0,0,0,55">
+    d:DesignHeight="800" d:DesignWidth="600" Width="800" Height="700" xmlns:dataInput="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Data.Input">
+    <Grid Height="600">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5*"></RowDefinition>
+            <RowDefinition Height="2*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Canvas Grid.Column="0" x:Name="LayoutRoot" Width="800" Height="500" Background="White" MouseLeftButtonDown="LayoutRoot_MouseLeftButtonDown">
         </Canvas>
-        <Button  Content="Clear" Height="22" Name="btnClear" Width="75" Click="btnClear_Click" Margin="0,443,425,35" />
-        <Button Content="Generate Random" Height="23" HorizontalAlignment="Left" Margin="0,465,0,0" Name="button1" VerticalAlignment="Top" Width="116" Click="button1_Click" />
-        <Button Content="Calculate Dist" Height="23" HorizontalAlignment="Left" Margin="72,443,0,0" Name="btnCalcDist" VerticalAlignment="Top" Width="116" Click="btnCalcDist_Click" />
-        <Button Content="Next" Height="23" HorizontalAlignment="Left" Margin="189,443,0,0" Name="btnNext" VerticalAlignment="Top" Width="75" Click="btnNext_Click" />
-        <Button Content="Best" Height="23" HorizontalAlignment="Left" Margin="265,443,0,0" Name="btnBest" VerticalAlignment="Top" Width="75" Click="btnBest_Click" />
-        <TextBox Height="23" HorizontalAlignment="Right" Margin="0,465,110,0" Name="txtBoxIloscK" VerticalAlignment="Top" Width="29" Text="1" />
-        <dataInput:Label Height="18" Margin="356,446,98,0" Name="label1" VerticalAlignment="Top" Content="Ilosc K" />
+        <Grid Width="800" Height="200" Margin="0,0,0,-29" Grid.Row="1">
+        <Button  Content="Clear" Height="22" Name="btnClear" Width="75" Click="btnClear_Click" Margin="6,130,718,48" />
+        <Button Content="Generate Random" Height="23" HorizontalAlignment="Left" Name="btnGenerateRandom" VerticalAlignment="Top" Width="116" Click="btnGenerateRandom_Click" Margin="246,139,0,0" />
+        <Button Content="Calculate Dist" Height="23" HorizontalAlignment="Left"  Name="btnCalcDist" VerticalAlignment="Top" Width="116" Click="btnCalcDist_Click" Margin="327,117,0,0" />
+        <Button Content="Next" Height="23" HorizontalAlignment="Left" Name="btnNext" VerticalAlignment="Top" Width="75" Click="btnNext_Click" Margin="379,143,0,0" />
+        <Button Content="Best" Height="23" HorizontalAlignment="Left"  Name="btnBest" VerticalAlignment="Top" Width="75" Click="btnBest_Click" Margin="246,117,0,0" />
+        <TextBox Height="23" HorizontalAlignment="Right" Name="txtBoxIloscK" VerticalAlignment="Top" Width="29" Text="1" Margin="0,129,71,0" />
+        <dataInput:Label Height="18"  Name="label1" VerticalAlignment="Top" Content="Ilosc K" Margin="700,106,40,0" />
+        </Grid>
     </Grid>
 </UserControl>

@@ -48,13 +48,13 @@ namespace GraphMaker.TFSAlgorithm
             return currentOrder;
         }
 
-        public  List<int> CalculateNext(int i)
+        public  List<int> Calculate(int nrOfIterations=10,bool best =true)
         {
             int iteration= 0;
             double delta = 0.0;
             double proba = 0.0;
 
-            for(int k=0;k<i;k++)
+            for (int k = 0; k < nrOfIterations; )
             {
                 CreateRandomOrder();
                 iteration++;
@@ -77,6 +77,11 @@ namespace GraphMaker.TFSAlgorithm
                 if ((Temperature < Epsilon))
                 {
                     return currentOrder;
+                }
+
+                if (!best)
+                {
+                    k++;
                 }
 
             }

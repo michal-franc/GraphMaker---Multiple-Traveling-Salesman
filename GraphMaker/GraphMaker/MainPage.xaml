@@ -12,7 +12,7 @@
         <Button Content="Generate Random" Height="23" HorizontalAlignment="Left" Margin="0,465,0,0" Name="button1" VerticalAlignment="Top" Width="116" Click="button1_Click" />
         <Button Content="Calculate Dist" Height="23" HorizontalAlignment="Left" Margin="72,443,0,0" Name="btnCalcDist" VerticalAlignment="Top" Width="116" Click="btnCalcDist_Click" />
         <Button Content="Next" Height="23" HorizontalAlignment="Left" Margin="189,443,0,0" Name="btnNext" VerticalAlignment="Top" Width="75" Click="btnNext_Click" />
-        <Button Content="Best" Height="23" HorizontalAlignment="Left" Margin="265,443,0,0" Name="btnBest" VerticalAlignment="Top" Width="75" />
+        <Button Content="Best" Height="23" HorizontalAlignment="Left" Margin="265,443,0,0" Name="btnBest" VerticalAlignment="Top" Width="75" Click="btnBest_Click" />
         <TextBox Height="23" HorizontalAlignment="Right" Margin="0,465,110,0" Name="txtBoxIloscK" VerticalAlignment="Top" Width="29" Text="1" />
         <dataInput:Label Height="18" Margin="356,446,98,0" Name="label1" VerticalAlignment="Top" Content="Ilosc K" />
     </Grid>

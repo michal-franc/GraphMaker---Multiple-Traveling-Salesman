@@ -235,25 +235,7 @@ namespace GraphMaker
 
         }
 
-        private void btnNext_Click(object sender, RoutedEventArgs e)
-        {
-            ClearLines();
-            if (NrOfSalesmans <= 1)
-            {
-                List<int> order = annealingForOne.CalculateNext(100);        
-                DrawLines(order);
-            }
-            else
-            {
-                foreach (Cluster clust in Clusters)
-                {
-                    List<int> order = clust.Annealing.CalculateNext(100);
-                    DrawLines(order, clust.Edges);
-                }
 
-            }
-
-        }
 
         private void ClearLines()
         {
@@ -321,6 +303,45 @@ namespace GraphMaker
             }
 
             return clusters;
+        }
+
+        private void btnBest_Click(object sender, RoutedEventArgs e)
+        {
+            ClearLines();
+            if (NrOfSalesmans <= 1)
+            {
+                List<int> order = annealingForOne.Calculate();
+                DrawLines(order);
+            }
+            else
+            {
+                foreach (Cluster clust in Clusters)
+                {
+                    List<int> order = clust.Annealing.Calculate();
+                    DrawLines(order, clust.Edges);
+                }
+
+            }
+        }
+
+        private void btnNext_Click(object sender, RoutedEventArgs e)
+        {
+            ClearLines();
+            if (NrOfSalesmans <= 1)
+            {
+                List<int> order = annealingForOne.Calculate(100,false);
+                DrawLines(order);
+            }
+            else
+            {
+                foreach (Cluster clust in Clusters)
+                {
+                    List<int> order = clust.Annealing.Calculate(100,false);
+                    DrawLines(order, clust.Edges);
+                }
+
+            }
+
         }
     }
 }

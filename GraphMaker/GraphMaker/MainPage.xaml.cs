@@ -16,14 +16,39 @@ namespace GraphMaker
 {
     public partial class MainPage : UserControl
     {
+        #region Properties
+        public double Alpha
+        {
+            get
+            {
+                return double.Parse(txtBoxAlpha.Text);
+            }
+        }
+
+        public double Epsilon
+        {
+            get
+            {
+                return double.Parse(txtBoxEpsilon.Text);
+            }
+        } 
+
+        public double Temp
+        {
+            get
+            {
+                return double.Parse(txtBoxTemp.Text);
+            }
+        }
 
         public int NrOfSalesmans
         {
             get
             {
-                return int.Parse(txtBoxIloscK.Text);
+               return int.Parse(txtBoxIloscK.Text);
             }
         }
+        #endregion
 
         private List<Edge> _edges = new List<Edge>();
 
@@ -221,7 +246,7 @@ namespace GraphMaker
                     }
                 }
                 annealingForOne = new SimulatedAnnealing();
-                List<int> order = annealingForOne.CalculateInit(_slEdges);
+                List<int> order = annealingForOne.CalculateInit(_slEdges,Alpha,Temp,Epsilon);
                 DrawLines(order);
             }
             else
@@ -239,7 +264,7 @@ namespace GraphMaker
                    }
                    clust.Color = Common.ColorPallete.GetColor();
 
-                   List<int> order = clust.Annealing.CalculateInit(clust.Edges);
+                   List<int> order = clust.Annealing.CalculateInit(clust.Edges, Alpha, Temp, Epsilon);
                    DrawLines(order,clust);
                }
 
@@ -345,14 +370,14 @@ namespace GraphMaker
             ClearLines();
             if (NrOfSalesmans <= 1)
             {
-                List<int> order = annealingForOne.Calculate(100,false);
+                List<int> order = annealingForOne.Calculate(100, false);
                 DrawLines(order);
             }
             else
             {
                 foreach (Cluster clust in Clusters)
                 {
-                    List<int> order = clust.Annealing.Calculate(100,false);
+                    List<int> order = clust.Annealing.Calculate(100, false);
                     DrawLines(order, clust);
                 }
 

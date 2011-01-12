@@ -29,7 +29,7 @@ namespace GraphMaker.TFSAlgorithm
 
         private  List<SilverlightEdge> _edges;
  
-        public  List<int>  CalculateInit(List<SilverlightEdge> current)
+        public  List<int>  CalculateInit(List<SilverlightEdge> current,double alpha=0.999,double temp = 400.0,double epsilon = 0.001)
         {
             EdgesCount = current.Count;
             _edges = current;
@@ -39,9 +39,9 @@ namespace GraphMaker.TFSAlgorithm
                 currentOrder.Add(i);
             }
 
-            Alpha = 0.999;
-            Temperature = 400.0;
-            Epsilon = 0.001;
+            Alpha = alpha;
+            Temperature = temp;
+            Epsilon = epsilon;
 
             CurrentDistance = CalculateDistance(currentOrder, current);
 

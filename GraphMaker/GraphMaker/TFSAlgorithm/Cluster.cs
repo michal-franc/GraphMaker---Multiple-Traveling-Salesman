@@ -18,6 +18,24 @@ namespace GraphMaker.TFSAlgorithm
         public Point ClusterCenter { get; set; }
         public SimulatedAnnealing  Annealing {get;set;}
 
+        private Color _color;
+
+        public Color Color
+        {
+            set
+            {
+                _color = value;
+                foreach (SilverlightEdge edge in Edges)
+                {
+                    edge.Color = value;
+                }
+            }
+            get
+            {
+                return _color;
+            }
+        }
+
         public Cluster(Point center)
         {
             Edges = new List<SilverlightEdge>();

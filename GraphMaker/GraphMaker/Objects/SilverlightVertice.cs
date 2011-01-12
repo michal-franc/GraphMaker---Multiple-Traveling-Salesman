@@ -33,6 +33,14 @@ namespace GraphMaker.Objects
             Line.StrokeThickness = 2;
         }
 
+        public Color Color
+        {
+            set
+            {
+                Line.Stroke = new SolidColorBrush(value);
+            }
+        }
+
         public Vertice Vertice
         {
             get;

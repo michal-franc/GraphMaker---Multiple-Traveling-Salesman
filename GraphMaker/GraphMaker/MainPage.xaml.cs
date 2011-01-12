@@ -237,9 +237,10 @@ namespace GraphMaker
                            edge.Distances.Add(edge.Position.CalculateDistance(edge1.Position));
                        }
                    }
+                   clust.Color = Common.ColorPallete.GetColor();
 
                    List<int> order = clust.Annealing.CalculateInit(clust.Edges);
-                   DrawLines(order,clust.Edges);
+                   DrawLines(order,clust);
                }
 
             }
@@ -271,22 +272,26 @@ namespace GraphMaker
             for(int i=0;i<order.Count-1;i++)
             {
                 SilverlightVertice vertice = new SilverlightVertice(_slEdges[order[i]].Position, _slEdges[order[i + 1]].Position);
+                vertice.Color = _slEdges[order[i]].Color;
                 this.LayoutRoot.Children.Add(vertice.Line);
             }
 
             SilverlightVertice vertice1 = new SilverlightVertice(_slEdges[order[order.Count - 1]].Position, _slEdges[order[0]].Position);
+            vertice1.Color = _slEdges[order[order.Count - 1]].Color;
             this.LayoutRoot.Children.Add(vertice1.Line);
         }
 
-        private void DrawLines(List<int> order,List<SilverlightEdge> edges)
+        private void DrawLines(List<int> order,Cluster cluster)
         {
             for (int i = 0; i < order.Count - 1; i++)
             {
-                SilverlightVertice vertice = new SilverlightVertice(edges[order[i]].Position, edges[order[i + 1]].Position);
+                SilverlightVertice vertice = new SilverlightVertice(cluster.Edges[order[i]].Position, cluster.Edges[order[i + 1]].Position);
+                vertice.Color = cluster.Color;
                 this.LayoutRoot.Children.Add(vertice.Line);
             }
 
-            SilverlightVertice vertice1 = new SilverlightVertice(edges[order[order.Count - 1]].Position, edges[order[0]].Position);
+            SilverlightVertice vertice1 = new SilverlightVertice(cluster.Edges[order[order.Count - 1]].Position, cluster.Edges[order[0]].Position);
+            vertice1.Color = cluster.Color;
             this.LayoutRoot.Children.Add(vertice1.Line);
         }
 
@@ -329,7 +334,7 @@ namespace GraphMaker
                 foreach (Cluster clust in Clusters)
                 {
                     List<int> order = clust.Annealing.Calculate();
-                    DrawLines(order, clust.Edges);
+                    DrawLines(order, clust);
                 }
 
             }
@@ -348,7 +353,7 @@ namespace GraphMaker
                 foreach (Cluster clust in Clusters)
                 {
                     List<int> order = clust.Annealing.Calculate(100,false);
-                    DrawLines(order, clust.Edges);
+                    DrawLines(order, clust);
                 }
 
             }

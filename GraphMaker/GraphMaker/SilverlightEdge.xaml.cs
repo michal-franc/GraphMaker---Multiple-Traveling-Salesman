@@ -16,12 +16,29 @@ namespace GraphMaker
     public partial class SilverlightEdge : UserControl
     {
         private List<double> _distances = new List<double>();
+        private List<SilverlightVertice> _vertices = new List<SilverlightVertice>();
 
         public List<double> Distances
         {
             get
             {
                 return _distances;
+            }
+        }
+
+        public Color Color
+        {
+            set
+            {
+                this.Ellipse.Stroke = new SolidColorBrush(value);
+                //foreach (SilverlightVertice vert in _vertices)
+                //{
+                //    vert.Color = Color;
+                //}
+            }
+            get
+            {
+                return ((SolidColorBrush)this.Ellipse.Stroke).Color;
             }
         }
       
@@ -45,11 +62,14 @@ namespace GraphMaker
             InitializeComponent();
             EdgeNumber = index;
             Position = p;
+            this.Color = Common.ColorPallete.DefaultColor;
             this.SetValue(Canvas.ZIndexProperty, 1);
         }
 
         private Point _position;
         public Edge Edge;
+
+
 
         public Point Position 
         {

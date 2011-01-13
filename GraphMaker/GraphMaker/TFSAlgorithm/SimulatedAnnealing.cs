@@ -20,9 +20,9 @@ namespace GraphMaker.TFSAlgorithm
         private  double Temperature { get; set; }
         private  double Epsilon { get; set; }
         private  double Delta { get; set; }
-        private  double CurrentDistance { get; set; }
+        public  double CurrentDistance { get; set; }
 
-        private  Random rand = new Random(DateTime.Now.Millisecond);
+        private Random rand;
 
         private  List<int> currentOrder = new List<int>();
         private  List<int> nextOrder = new List<int>();
@@ -31,6 +31,7 @@ namespace GraphMaker.TFSAlgorithm
  
         public  List<int>  CalculateInit(List<SilverlightEdge> current,double alpha=0.999,double temp = 400.0,double epsilon = 0.001)
         {
+            rand = new Random(DateTime.Now.Millisecond);
             EdgesCount = current.Count;
             _edges = current;
 

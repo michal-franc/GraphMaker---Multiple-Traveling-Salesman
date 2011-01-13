@@ -3,6 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
     mc:Ignorable="d"
     d:DesignHeight="800" d:DesignWidth="600" Width="800" Height="700" xmlns:dataInput="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Data.Input">
     <sdk:TabControl  >
@@ -19,19 +20,20 @@
             <Canvas Grid.Column="0" x:Name="LayoutRoot" Width="800" Height="500" Background="White" MouseLeftButtonDown="LayoutRoot_MouseLeftButtonDown">
             </Canvas>
             <Grid Width="800" Height="200" Margin="0,0,0,-29" Grid.Row="1">
-                <Button  Content="Clear" Height="22" Name="btnClear" Width="75" Click="btnClear_Click" Margin="6,130,718,48" />
-                <Button Content="Generate Random" Height="23" HorizontalAlignment="Left" Name="btnGenerateRandom" VerticalAlignment="Top" Width="116" Click="btnGenerateRandom_Click" Margin="246,139,0,0" />
-                <Button Content="Calculate Dist" Height="23" HorizontalAlignment="Left"  Name="btnCalcDist" VerticalAlignment="Top" Width="116" Click="btnCalcDist_Click" Margin="327,117,0,0" />
-                <Button Content="Next" Height="23" HorizontalAlignment="Left" Name="btnNext" VerticalAlignment="Top" Width="75" Click="btnNext_Click" Margin="379,143,0,0" />
-                <Button Content="Best" Height="23" HorizontalAlignment="Left"  Name="btnBest" VerticalAlignment="Top" Width="75" Click="btnBest_Click" Margin="246,117,0,0" />
-                <TextBox Height="23" HorizontalAlignment="Right" Name="txtBoxIloscK" VerticalAlignment="Top" Width="46" Text="1" Margin="0,129,54,0" />
-                <dataInput:Label Height="18"  Name="label1" VerticalAlignment="Top" Content="Iterations" Margin="700,106,40,0" />
-                    <TextBox Height="23" HorizontalAlignment="Right" Margin="0,129,243,0" Name="txtBoxAlpha" Text="0.999" VerticalAlignment="Top" Width="40" />
-                    <sdk:Label Content="Alpha" Height="18" Margin="517,106,243,0" Name="label2" VerticalAlignment="Top" />
-                    <TextBox Height="23" HorizontalAlignment="Right" Margin="0,129,172,0" Name="txtBoxEpsilon" Text="0.001" VerticalAlignment="Top" Width="45" />
-                    <sdk:Label Content="Epsilon" Height="18" Margin="583,106,157,0" Name="label3" VerticalAlignment="Top" />
-                    <TextBox Height="23" HorizontalAlignment="Right" Margin="0,129,126,0" Name="txtBoxTemp" Text="400.0" VerticalAlignment="Top" Width="40" />
-                    <sdk:Label Content="Temp" Height="18" Margin="634,106,106,0" Name="label4" VerticalAlignment="Top" />
+                <Button  Content="Clear" Height="22" Name="btnClear" Width="75" Click="btnClear_Click" Margin="4,77,720,101" />
+                <Button Content="Generate Random" Height="23" HorizontalAlignment="Left" Name="btnGenerateRandom" VerticalAlignment="Top" Width="116" Click="btnGenerateRandom_Click" Margin="6,102,0,0" />
+                    <Button Content="Next" Height="23" HorizontalAlignment="Left" Name="btnNext" VerticalAlignment="Top" Width="75" Click="btnNext_Click" Margin="299,76,0,0" />
+                <Button Content="Best" Height="23" HorizontalAlignment="Left"  Name="btnBest" VerticalAlignment="Top" Width="75" Click="btnBest_Click" Margin="166,77,0,0" />
+                <TextBox Height="23" HorizontalAlignment="Right" Name="txtBoxIloscK" VerticalAlignment="Top" Width="46" Text="1" Margin="0,130,455,0" />
+                <dataInput:Label Height="18"  Name="label1" VerticalAlignment="Top" Content="Iterations" Margin="299,107,441,0" />
+                    <TextBox Height="23" HorizontalAlignment="Right" Margin="0,0,243,48" Name="txtBoxAlpha" Text="0.999" VerticalAlignment="Bottom" Width="40" />
+                    <sdk:Label Content="Alpha" Height="18" Margin="517,107,243,0" Name="label2" VerticalAlignment="Top" />
+                    <TextBox Height="23" HorizontalAlignment="Right" Margin="0,130,192,0" Name="txtBoxEpsilon" Text="0.001" VerticalAlignment="Top" Width="45" />
+                    <sdk:Label Content="Epsilon" Height="18" Margin="563,106,177,0" Name="label3" VerticalAlignment="Top" />
+                    <TextBox Height="23" HorizontalAlignment="Right" Margin="0,130,146,0" Name="txtBoxTemp" Text="400.0" VerticalAlignment="Top" Width="40" />
+                    <sdk:Label Content="Temp" Height="18" Margin="614,107,126,0" Name="label4" VerticalAlignment="Top" />
+                    <TextBox Height="23" HorizontalAlignment="Right" Margin="0,0,698,48" Name="txtBoxNumverOOfEdges" Text="50" VerticalAlignment="Bottom" Width="40" />
+                    <sdk:Label Content="NrOfEdges" Height="18" Margin="16,129,744,0" Name="label6" VerticalAlignment="Top" />
                 </Grid>
         </Grid>
         </sdk:TabItem>
@@ -39,6 +41,117 @@
             <sdk:TabItem.Header>
                 <TextBlock Text="Stats"></TextBlock>
             </sdk:TabItem.Header>
+            <Grid Height="600">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="5*"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="5*"></RowDefinition>
+                        <RowDefinition Height="5*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                        <telerik:RadChart Grid.Row="0" Name="chartAlpha">
+                        <telerik:RadChart.SeriesMappings>
+                            <telerik:SeriesMapping LegendLabel="Average">
+                                <telerik:SeriesMapping.SeriesDefinition>
+                                    <telerik:LineSeriesDefinition ShowItemLabels="False" ShowPointMarks="True" />
+                                </telerik:SeriesMapping.SeriesDefinition>
+                                <telerik:SeriesMapping.ItemMappings>
+                                    <telerik:ItemMapping FieldName="X" DataPointMember="XCategory" />
+                                    <telerik:ItemMapping FieldName="Y" DataPointMember="YValue" AggregateFunction="Average"/>
+                                </telerik:SeriesMapping.ItemMappings>
+                                <telerik:SeriesMapping.GroupingSettings>
+                                    <telerik:GroupingSettings ShouldFlattenSeries="True">
+                                        <telerik:ChartGroupDescriptor  Member="X" />
+                                    </telerik:GroupingSettings>
+                                </telerik:SeriesMapping.GroupingSettings>
+                            </telerik:SeriesMapping>
+                            <telerik:SeriesMapping LegendLabel="Best">
+                                <telerik:SeriesMapping.SeriesDefinition>
+                                    <telerik:LineSeriesDefinition ShowItemLabels="False" ShowPointMarks="True" />
+                                </telerik:SeriesMapping.SeriesDefinition>
+                                <telerik:SeriesMapping.ItemMappings>
+                                    <telerik:ItemMapping FieldName="X" DataPointMember="XCategory" />
+                                    <telerik:ItemMapping FieldName="Y" DataPointMember="YValue" AggregateFunction="Min"/>
+                                </telerik:SeriesMapping.ItemMappings>
+                                <telerik:SeriesMapping.GroupingSettings>
+                                    <telerik:GroupingSettings ShouldFlattenSeries="True">
+                                        <telerik:ChartGroupDescriptor  Member="X" />
+                                    </telerik:GroupingSettings>
+                                </telerik:SeriesMapping.GroupingSettings>
+                            </telerik:SeriesMapping>
+                            <telerik:SeriesMapping LegendLabel="Worst">
+                                <telerik:SeriesMapping.SeriesDefinition>
+                                    <telerik:LineSeriesDefinition ShowItemLabels="False" ShowPointMarks="True" />
+                                </telerik:SeriesMapping.SeriesDefinition>
+                                <telerik:SeriesMapping.ItemMappings>
+                                    <telerik:ItemMapping FieldName="X" DataPointMember="XCategory" />
+                                    <telerik:ItemMapping FieldName="Y" DataPointMember="YValue" AggregateFunction="Max"/>
+                                </telerik:SeriesMapping.ItemMappings>
+                                <telerik:SeriesMapping.GroupingSettings>
+                                    <telerik:GroupingSettings ShouldFlattenSeries="True">
+                                        <telerik:ChartGroupDescriptor  Member="X" />
+                                    </telerik:GroupingSettings>
+                                </telerik:SeriesMapping.GroupingSettings>
+                            </telerik:SeriesMapping>
+                        </telerik:RadChart.SeriesMappings>
+                    </telerik:RadChart>
+                        <telerik:RadChart Grid.Row="1" Name="chartTemp" >
+                        <telerik:RadChart.SeriesMappings>
+                            <telerik:SeriesMapping LegendLabel="Average">
+                                <telerik:SeriesMapping.SeriesDefinition>
+                                    <telerik:LineSeriesDefinition ShowItemLabels="False" ShowPointMarks="True" />
+                                </telerik:SeriesMapping.SeriesDefinition>
+                                <telerik:SeriesMapping.ItemMappings>
+                                    <telerik:ItemMapping FieldName="X" DataPointMember="XCategory" />
+                                    <telerik:ItemMapping FieldName="Y" DataPointMember="YValue" AggregateFunction="Average"/>
+                                </telerik:SeriesMapping.ItemMappings>
+                                <telerik:SeriesMapping.GroupingSettings>
+                                    <telerik:GroupingSettings ShouldFlattenSeries="True">
+                                        <telerik:ChartGroupDescriptor  Member="X" />
+                                    </telerik:GroupingSettings>
+                                </telerik:SeriesMapping.GroupingSettings>
+                            </telerik:SeriesMapping>
+                            <telerik:SeriesMapping LegendLabel="Best">
+                                <telerik:SeriesMapping.SeriesDefinition>
+                                    <telerik:LineSeriesDefinition ShowItemLabels="False" ShowPointMarks="True" />
+                                </telerik:SeriesMapping.SeriesDefinition>
+                                <telerik:SeriesMapping.ItemMappings>
+                                    <telerik:ItemMapping FieldName="X" DataPointMember="XCategory" />
+                                    <telerik:ItemMapping FieldName="Y" DataPointMember="YValue" AggregateFunction="Min"/>
+                                </telerik:SeriesMapping.ItemMappings>
+                                <telerik:SeriesMapping.GroupingSettings>
+                                    <telerik:GroupingSettings ShouldFlattenSeries="True">
+                                        <telerik:ChartGroupDescriptor  Member="X" />
+                                    </telerik:GroupingSettings>
+                                </telerik:SeriesMapping.GroupingSettings>
+                            </telerik:SeriesMapping>
+                            <telerik:SeriesMapping LegendLabel="Worst">
+                                <telerik:SeriesMapping.SeriesDefinition>
+                                    <telerik:LineSeriesDefinition ShowItemLabels="False" ShowPointMarks="True" />
+                                </telerik:SeriesMapping.SeriesDefinition>
+                                <telerik:SeriesMapping.ItemMappings>
+                                    <telerik:ItemMapping FieldName="X" DataPointMember="XCategory" />
+                                    <telerik:ItemMapping FieldName="Y" DataPointMember="YValue" AggregateFunction="Max"/>
+                                </telerik:SeriesMapping.ItemMappings>
+                                <telerik:SeriesMapping.GroupingSettings>
+                                    <telerik:GroupingSettings ShouldFlattenSeries="True">
+                                        <telerik:ChartGroupDescriptor  Member="X" />
+                                    </telerik:GroupingSettings>
+                                </telerik:SeriesMapping.GroupingSettings>
+                            </telerik:SeriesMapping>
+                        </telerik:RadChart.SeriesMappings>
+                    </telerik:RadChart>
+                </Grid>
+                <Grid Grid.Row="1">
+                    <Button Content="CreateStats" Name="btnCreateStats" Margin="37,30,666,37" Click="btnCreateStats_Click"></Button>
+                    <TextBox Height="23" HorizontalAlignment="Left" Margin="185,41,0,0" Name="textBoxIterations" VerticalAlignment="Top" Width="65" Text="100" />
+                    <sdk:Label Height="28" HorizontalAlignment="Left" Margin="185,16,0,0" Name="label5" VerticalAlignment="Top" Width="120" Content="Iterations" />
+                    <TextBox Height="23" HorizontalAlignment="Left" Margin="276,41,0,0" Name="textBox1" VerticalAlignment="Top" Width="63" Text="100-2000" />
+                    <ProgressBar Height="10" HorizontalAlignment="Left" Name="progressBar" IsIndeterminate="False" VerticalAlignment="Top" Width="788" />
+                </Grid>
+            </Grid>
         </sdk:TabItem>
     </sdk:TabControl>
 </UserControl>

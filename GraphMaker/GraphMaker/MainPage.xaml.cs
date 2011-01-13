@@ -11,12 +11,16 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using GraphMaker.Objects;
 using GraphMaker.TFSAlgorithm;
+using System.ComponentModel;
 
 namespace GraphMaker
 {
     public partial class MainPage : UserControl
     {
         #region Properties
+
+        private double _alpha;
+
         public double Alpha
         {
             get
@@ -25,13 +29,17 @@ namespace GraphMaker
             }
         }
 
+        private double _epsilon;
+
         public double Epsilon
         {
             get
             {
                 return double.Parse(txtBoxEpsilon.Text);
             }
-        } 
+        }
+
+        private double _temp;
 
         public double Temp
         {
@@ -41,6 +49,8 @@ namespace GraphMaker
             }
         }
 
+        private int _nrOfSalesman = 0;
+
         public int NrOfSalesmans
         {
             get
@@ -48,7 +58,31 @@ namespace GraphMaker
                return int.Parse(txtBoxIloscK.Text);
             }
         }
+
+        private int _statsIterations=0;
+
+        public int StatsIterations
+        {
+            get
+            {
+                return  int.Parse(textBoxIterations.Text);
+            }
+        }
+
+        public int NumberOFEdges
+        {
+            get
+            {
+                return int.Parse(txtBoxNumverOOfEdges.Text);
+            }
+        }
+
         #endregion
+
+        BackgroundWorker _worker;
+
+        List<DataObject> tempData;
+        List<DataObject> alphaData;
 
         private List<Edge> _edges = new List<Edge>();
 
@@ -222,7 +256,7 @@ namespace GraphMaker
         {
             //1. Create random generator
             Random rand = new Random(DateTime.Now.Millisecond);
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < NumberOFEdges; i++)
             {
                 edgeCounter++;
                 double x = rand.NextDouble() * 800;
@@ -234,7 +268,42 @@ namespace GraphMaker
 
         }
 
-        private void btnCalcDist_Click(object sender, RoutedEventArgs e)
+        private void CalculateDistancesAndCreateAreasThread()
+        {
+            if (_nrOfSalesman <= 1)
+            {
+                foreach (SilverlightEdge edge in _slEdges)
+                {
+                    foreach (SilverlightEdge edge1 in _slEdges)
+                    {
+                        edge.Distances.Add(edge.Position.CalculateDistance(edge1.Position));
+                    }
+                }
+                annealingForOne = new SimulatedAnnealing();
+                List<int> order = annealingForOne.CalculateInit(_slEdges, _alpha, _temp, _epsilon);
+            }
+            else
+            {
+                Clusters = CreateAreas(_nrOfSalesman);
+
+                foreach (Cluster clust in Clusters)
+                {
+                    foreach (SilverlightEdge edge in clust.Edges)
+                    {
+                        foreach (SilverlightEdge edge1 in clust.Edges)
+                        {
+                            edge.Distances.Add(edge.Position.CalculateDistance(edge1.Position));
+                        }
+                    }
+                    clust.Color = Common.ColorPallete.GetColor();
+
+                    List<int> order = clust.Annealing.CalculateInit(clust.Edges, _alpha, _temp, _epsilon);
+                }
+
+            }
+        }
+
+        private void CalculateDistancesAndCreateAreas()
         {
             if (NrOfSalesmans <= 1)
             {
@@ -247,7 +316,6 @@ namespace GraphMaker
                 }
                 annealingForOne = new SimulatedAnnealing();
                 List<int> order = annealingForOne.CalculateInit(_slEdges,Alpha,Temp,Epsilon);
-                DrawLines(order);
             }
             else
             {
@@ -265,7 +333,6 @@ namespace GraphMaker
                    clust.Color = Common.ColorPallete.GetColor();
 
                    List<int> order = clust.Annealing.CalculateInit(clust.Edges, Alpha, Temp, Epsilon);
-                   DrawLines(order,clust);
                }
 
             }
@@ -349,6 +416,8 @@ namespace GraphMaker
         private void btnBest_Click(object sender, RoutedEventArgs e)
         {
             ClearLines();
+            ClearClusters();
+            CalculateDistancesAndCreateAreasThread();
             if (NrOfSalesmans <= 1)
             {
                 List<int> order = annealingForOne.Calculate();
@@ -361,13 +430,19 @@ namespace GraphMaker
                     List<int> order = clust.Annealing.Calculate();
                     DrawLines(order, clust);
                 }
-
             }
+        }
+
+        private void ClearClusters()
+        {
+            if(Clusters  != null)
+                Clusters.Clear();
         }
 
         private void btnNext_Click(object sender, RoutedEventArgs e)
         {
             ClearLines();
+            CalculateDistancesAndCreateAreas();
             if (NrOfSalesmans <= 1)
             {
                 List<int> order = annealingForOne.Calculate(100, false);
@@ -384,5 +459,113 @@ namespace GraphMaker
             }
 
         }
+
+        private void btnCreateStats_Click(object sender, RoutedEventArgs e)
+        {
+
+            _statsIterations = StatsIterations;
+            _nrOfSalesman = NrOfSalesmans;
+            _temp = Temp;
+            _epsilon = Epsilon;
+            _alpha = Alpha;
+
+            _worker = new BackgroundWorker();
+            _worker.WorkerReportsProgress = true;
+            _worker.ProgressChanged += new ProgressChangedEventHandler(_worker_ProgressChanged);
+            _worker.DoWork += new DoWorkEventHandler(_worker_DoWork);
+            _worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(_worker_RunWorkerCompleted);
+            _worker.RunWorkerAsync();
+
+
+        }
+
+        void _worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            chartTemp.ItemsSource = tempData;
+            chartAlpha.ItemsSource = alphaData;
+        }
+
+        void _worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            progressBar.Value = e.ProgressPercentage;
+        }
+
+        void _worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            tempData = new List<DataObject>();
+            alphaData = new List<DataObject>();
+
+            //Temp od 10-1000
+            for (int temp = 100; temp < 2000; temp += 100)
+            {
+                for (int i = 0; i < _statsIterations; i++)
+                {
+                    DataObject dataObject = new DataObject();
+
+                    dataObject.X = temp;
+                    CalculateDistancesAndCreateAreasThread();
+                    if (_nrOfSalesman <= 1)
+                    {
+                        List<int> order = annealingForOne.Calculate();
+                        dataObject.Y = annealingForOne.CurrentDistance;
+                        tempData.Add(dataObject);
+                    }
+                    else
+                    {
+                        foreach (Cluster clust in Clusters)
+                        {
+                            List<int> order = clust.Annealing.Calculate();
+                        }
+                        var dist = Clusters.Average(x => x.Annealing.CurrentDistance);
+                        dataObject.Y = dist;
+                        tempData.Add(dataObject);
+                    }
+
+                }
+
+                _worker.ReportProgress(((temp*100) / 2000));
+            }
+
+                        
+           _worker.ReportProgress(0);
+            //1. Alpha od 0.1000 - 0.9999
+
+            for (double alpha = 0.1000; alpha < 0.9999; alpha += 0.01)
+            {
+
+                for (int i = 0; i < _statsIterations; i++)
+                {
+                    DataObject dataObject = new DataObject();
+
+                    dataObject.X = alpha;
+                    CalculateDistancesAndCreateAreasThread();
+                    if (_nrOfSalesman <= 1)
+                    {
+                        List<int> order = annealingForOne.Calculate();
+                        dataObject.Y = annealingForOne.CurrentDistance;
+                        alphaData.Add(dataObject);
+                    }
+                    else
+                    {
+                        foreach (Cluster clust in Clusters)
+                        {
+                            List<int> order = clust.Annealing.Calculate();
+                        }
+                        var dist = Clusters.Average(x => x.Annealing.CurrentDistance);
+                        dataObject.Y = dist;
+                        alphaData.Add(dataObject);
+                    }
+
+                }
+                _worker.ReportProgress((int)((alpha*100)/0.9999));
+            }
+        }
+
+    }
+
+    public class DataObject
+    {
+        public double X { get; set; }
+        public double Y { get; set; }
     }
 }

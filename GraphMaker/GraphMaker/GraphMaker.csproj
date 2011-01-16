@@ -91,6 +91,8 @@
     </Compile>
     <Compile Include="TFSAlgorithm\Cluster.cs" />
     <Compile Include="TFSAlgorithm\KMeanClustering.cs" />
+    <Compile Include="TFSAlgorithm\PolarCoord.cs" />
+    <Compile Include="TFSAlgorithm\ShrinkWrap.cs" />
     <Compile Include="TFSAlgorithm\SimulatedAnnealing.cs" />
   </ItemGroup>
   <ItemGroup>

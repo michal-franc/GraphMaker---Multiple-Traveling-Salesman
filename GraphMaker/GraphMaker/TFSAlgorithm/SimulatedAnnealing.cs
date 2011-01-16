@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GraphMaker.TFSAlgorithm
 {
@@ -28,8 +29,9 @@ namespace GraphMaker.TFSAlgorithm
         private  List<int> nextOrder = new List<int>();
 
         private  List<SilverlightEdge> _edges;
+        private double[,] _distancesArray;
  
-        public  List<int>  CalculateInit(List<SilverlightEdge> current,double alpha=0.999,double temp = 400.0,double epsilon = 0.001)
+        public  List<int>  CalculateInit(List<SilverlightEdge> current,double [,] distancesArray,double alpha=0.999,double temp = 400.0,double epsilon = 0.001)
         {
             rand = new Random(DateTime.Now.Millisecond);
             EdgesCount = current.Count;
@@ -39,12 +41,12 @@ namespace GraphMaker.TFSAlgorithm
             {
                 currentOrder.Add(i);
             }
-
+            _distancesArray = distancesArray;
             Alpha = alpha;
             Temperature = temp;
             Epsilon = epsilon;
-
-            CurrentDistance = CalculateDistance(currentOrder, current);
+            currentOrder = ShrinkWrap.CreateInitialorder(current);
+            CurrentDistance = CalculateDistance(currentOrder, _distancesArray);
 
             return currentOrder;
         }
@@ -59,7 +61,7 @@ namespace GraphMaker.TFSAlgorithm
             {
                 CreateRandomOrder();
                 iteration++;
-                delta = CalculateDistance(nextOrder, _edges) -CurrentDistance;
+                delta = CalculateDistance(nextOrder, _distancesArray) -CurrentDistance;
                 if (delta < 0)
                 {
                     Copy(currentOrder,nextOrder);
@@ -116,16 +118,17 @@ namespace GraphMaker.TFSAlgorithm
             nextOrder[i2] = aux;
         }
 
-        private  double CalculateDistance(List<int> order, List<SilverlightEdge> current)
+        private  double CalculateDistance(List<int> order, double [,] distanceArray)
         {
 
             double distance = 0.0;
 
             for (int i = 0; i < order.Count-1; i++)
             {
-                distance += current[order[i]].Distances[order[i + 1]];
+                distance += distanceArray[order[i], order[i + 1]];
             }
-            distance += current[order[order.Count-1]].Distances[order[0]];
+
+            distance += distanceArray[order[order.Count - 1], order[0]];
 
             return distance;
         }

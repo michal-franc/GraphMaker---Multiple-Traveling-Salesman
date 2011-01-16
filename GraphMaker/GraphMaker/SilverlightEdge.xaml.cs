@@ -10,21 +10,13 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using GraphMaker.Objects;
+using GraphMaker.TFSAlgorithm;
 
 namespace GraphMaker
 {
     public partial class SilverlightEdge : UserControl
     {
-        private List<double> _distances = new List<double>();
         private List<SilverlightVertice> _vertices = new List<SilverlightVertice>();
-
-        public List<double> Distances
-        {
-            get
-            {
-                return _distances;
-            }
-        }
 
         public Color Color
         {
@@ -82,8 +74,11 @@ namespace GraphMaker
                 _position = value;
                 this.SetValue(Canvas.LeftProperty, value.X);
                 this.SetValue(Canvas.TopProperty, value.Y);
+                PolarCords = new PolarCord(value);
             }
         }
+
+        public PolarCord PolarCords { get; set; }
 
     }
 }

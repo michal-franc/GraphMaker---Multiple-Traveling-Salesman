@@ -22,18 +22,24 @@
             <Grid Width="800" Height="200" Margin="0,0,0,-29" Grid.Row="1">
                 <Button  Content="Clear" Height="22" Name="btnClear" Width="75" Click="btnClear_Click" Margin="4,77,720,101" />
                 <Button Content="Generate Random" Height="23" HorizontalAlignment="Left" Name="btnGenerateRandom" VerticalAlignment="Top" Width="116" Click="btnGenerateRandom_Click" Margin="6,102,0,0" />
-                    <Button Content="Next" Height="23" HorizontalAlignment="Left" Name="btnNext" VerticalAlignment="Top" Width="75" Click="btnNext_Click" Margin="299,76,0,0" />
-                <Button Content="Best" Height="23" HorizontalAlignment="Left"  Name="btnBest" VerticalAlignment="Top" Width="75" Click="btnBest_Click" Margin="166,77,0,0" />
-                <TextBox Height="23" HorizontalAlignment="Right" Name="txtBoxIloscK" VerticalAlignment="Top" Width="46" Text="1" Margin="0,130,455,0" />
-                <dataInput:Label Height="18"  Name="label1" VerticalAlignment="Top" Content="Iterations" Margin="299,107,441,0" />
-                    <TextBox Height="23" HorizontalAlignment="Right" Margin="0,0,243,48" Name="txtBoxAlpha" Text="0.999" VerticalAlignment="Bottom" Width="40" />
-                    <sdk:Label Content="Alpha" Height="18" Margin="517,107,243,0" Name="label2" VerticalAlignment="Top" />
-                    <TextBox Height="23" HorizontalAlignment="Right" Margin="0,130,192,0" Name="txtBoxEpsilon" Text="0.001" VerticalAlignment="Top" Width="45" />
-                    <sdk:Label Content="Epsilon" Height="18" Margin="563,106,177,0" Name="label3" VerticalAlignment="Top" />
-                    <TextBox Height="23" HorizontalAlignment="Right" Margin="0,130,146,0" Name="txtBoxTemp" Text="400.0" VerticalAlignment="Top" Width="40" />
-                    <sdk:Label Content="Temp" Height="18" Margin="614,107,126,0" Name="label4" VerticalAlignment="Top" />
+                    <Button Content="Next" Height="23" HorizontalAlignment="Left" Name="btnNext" VerticalAlignment="Top" Width="75" Click="btnNext_Click" Margin="479,77,0,0" />
+                <Button Content="Best" Height="23" HorizontalAlignment="Left"  Name="btnBest" VerticalAlignment="Top" Width="75" Click="btnBest_Click" Margin="399,77,0,0" />
+                <TextBox Height="23" HorizontalAlignment="Right" Name="txtBoxIloscK" VerticalAlignment="Top" Width="46" Text="1" Margin="0,130,609,0" />
+                <dataInput:Label Height="18"  Name="label1" VerticalAlignment="Top" Content="NrOfSalesmans" Margin="145,107,534,0" />
+                    <TextBox Height="23" HorizontalAlignment="Right" Margin="0,0,361,49" Name="txtBoxAlpha" Text="0.999" VerticalAlignment="Bottom" Width="40" />
+                    <sdk:Label Content="Alpha" Height="18" Margin="399,106,361,0" Name="label2" VerticalAlignment="Top" />
+                    <TextBox Height="23" HorizontalAlignment="Right" Margin="0,129,310,0" Name="txtBoxEpsilon" Text="0.001" VerticalAlignment="Top" Width="45" />
+                    <sdk:Label Content="Epsilon" Height="18" Margin="445,105,295,0" Name="label3" VerticalAlignment="Top" />
+                    <TextBox Height="23" HorizontalAlignment="Right" Margin="0,129,264,0" Name="txtBoxTemp" Text="400.0" VerticalAlignment="Top" Width="40" />
+                    <sdk:Label Content="Temp" Height="18" Margin="496,106,244,0" Name="label4" VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Right" Margin="0,0,698,48" Name="txtBoxNumverOOfEdges" Text="50" VerticalAlignment="Bottom" Width="40" />
                     <sdk:Label Content="NrOfEdges" Height="18" Margin="16,129,744,0" Name="label6" VerticalAlignment="Top" />
+                    <Button Content="K-Mean Clustering" Height="23" HorizontalAlignment="Left" Margin="145,76,0,0" Name="btnClustering" VerticalAlignment="Top" Width="121" Click="btnClustering_Click" />
+                    <Button Content="Shrink Wrap" Height="23" HorizontalAlignment="Left" Margin="272,76,0,0" Name="btnShrinkWrap" Click="btnShrinkWrap_Click" VerticalAlignment="Top" Width="121" />
+                    <TextBlock Height="18" HorizontalAlignment="Left" Margin="683,76,0,0" Foreground="Red"  Name="txtBlockDistance" Text="Distance" VerticalAlignment="Top" Width="90" />
+                    <sdk:Label Height="16" HorizontalAlignment="Left" Margin="622,78,0,0" Name="label7" Content="Distance :" VerticalAlignment="Top" Width="61" />
+                    <ProgressBar Height="10" HorizontalAlignment="Right" Margin="0,160,11,0" Name="progressBarMain" VerticalAlignment="Top" Width="789" />
+                    <TextBox Height="23" HorizontalAlignment="Left" Margin="560,78,0,0" Name="txtBoxNrOfIterations" Text="1" VerticalAlignment="Top" Width="56" />
                 </Grid>
         </Grid>
         </sdk:TabItem>

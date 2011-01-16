@@ -17,7 +17,7 @@ namespace GraphMaker
 {
     public partial class MainPage : UserControl
     {
-        #region Properties
+        #region Parameters
 
         private double _alpha;
 
@@ -77,6 +77,17 @@ namespace GraphMaker
             }
         }
 
+        private int _nrOfIterations = 1;
+
+        public int NrOfIterations
+        {
+            get
+            {
+                return int.Parse(txtBoxNrOfIterations.Text);
+            }
+        }
+
+
         #endregion
 
         BackgroundWorker _worker;
@@ -88,10 +99,12 @@ namespace GraphMaker
 
         List<SilverlightEdge> _slEdges = new List<SilverlightEdge>();
 
-        private int edgeCounter = 0;
+        private int edgeCounter = -1;
         SilverlightEdge _edge1;
         SilverlightEdge _edge2;
         private bool _oneSelected=false;
+
+        double[,] distances;
 
         SimulatedAnnealing annealingForOne;
 
@@ -254,6 +267,9 @@ namespace GraphMaker
 
         private void btnGenerateRandom_Click(object sender, RoutedEventArgs e)
         {
+            ClearLines();
+            ClearClusters();
+            distances = new double[NumberOFEdges, NumberOFEdges];
             //1. Create random generator
             Random rand = new Random(DateTime.Now.Millisecond);
             for (int i = 0; i < NumberOFEdges; i++)
@@ -266,38 +282,33 @@ namespace GraphMaker
                 //2. Create edge in random location in x y.
             }
 
+            foreach (SilverlightEdge edge in _slEdges)
+            {
+                foreach (SilverlightEdge edge1 in _slEdges)
+                {
+                    distances[edge.EdgeNumber,edge1.EdgeNumber] =edge.Position.CalculateDistance(edge1.Position);
+                }
+            }
+
+            first = true;
+
         }
 
         private void CalculateDistancesAndCreateAreasThread()
         {
+
             if (_nrOfSalesman <= 1)
             {
-                foreach (SilverlightEdge edge in _slEdges)
-                {
-                    foreach (SilverlightEdge edge1 in _slEdges)
-                    {
-                        edge.Distances.Add(edge.Position.CalculateDistance(edge1.Position));
-                    }
-                }
+
                 annealingForOne = new SimulatedAnnealing();
-                List<int> order = annealingForOne.CalculateInit(_slEdges, _alpha, _temp, _epsilon);
+                List<int> order = annealingForOne.CalculateInit(_slEdges,distances, _alpha, _temp, _epsilon);
             }
             else
             {
-                Clusters = CreateAreas(_nrOfSalesman);
 
                 foreach (Cluster clust in Clusters)
                 {
-                    foreach (SilverlightEdge edge in clust.Edges)
-                    {
-                        foreach (SilverlightEdge edge1 in clust.Edges)
-                        {
-                            edge.Distances.Add(edge.Position.CalculateDistance(edge1.Position));
-                        }
-                    }
-                    clust.Color = Common.ColorPallete.GetColor();
-
-                    List<int> order = clust.Annealing.CalculateInit(clust.Edges, _alpha, _temp, _epsilon);
+                    List<int> order = clust.Annealing.CalculateInit(clust.Edges,distances, _alpha, _temp, _epsilon);
                 }
 
             }
@@ -311,11 +322,12 @@ namespace GraphMaker
                 {
                     foreach (SilverlightEdge edge1 in _slEdges)
                     {
-                        edge.Distances.Add(edge.Position.CalculateDistance(edge1.Position));
+                        edge.PolarCords.Center(new Point(300,400));
                     }
                 }
                 annealingForOne = new SimulatedAnnealing();
-                List<int> order = annealingForOne.CalculateInit(_slEdges,Alpha,Temp,Epsilon);
+                List<int> order = annealingForOne.CalculateInit(_slEdges,distances,Alpha,Temp,Epsilon);
+                DrawLines(order);
             }
             else
             {
@@ -327,12 +339,13 @@ namespace GraphMaker
                    {
                        foreach (SilverlightEdge edge1 in clust.Edges)
                        {
-                           edge.Distances.Add(edge.Position.CalculateDistance(edge1.Position));
+                           edge.PolarCords.Center(clust.ClusterCenter);
                        }
                    }
                    clust.Color = Common.ColorPallete.GetColor();
 
-                   List<int> order = clust.Annealing.CalculateInit(clust.Edges, Alpha, Temp, Epsilon);
+                   List<int> order = clust.Annealing.CalculateInit(clust.Edges,distances, Alpha, Temp, Epsilon);
+                   DrawLines(order);
                }
 
             }
@@ -377,12 +390,15 @@ namespace GraphMaker
         {
             for (int i = 0; i < order.Count - 1; i++)
             {
-                SilverlightVertice vertice = new SilverlightVertice(cluster.Edges[order[i]].Position, cluster.Edges[order[i + 1]].Position);
+                SilverlightEdge edge1 = cluster.Edges.Where(x => x.EdgeNumber == order[i]).First();
+                SilverlightEdge edge2 = cluster.Edges.Where(x => x.EdgeNumber == order[i + 1]).First();
+                SilverlightVertice vertice = new SilverlightVertice(edge1.Position, edge2.Position);
                 vertice.Color = cluster.Color;
                 this.LayoutRoot.Children.Add(vertice.Line);
             }
-
-            SilverlightVertice vertice1 = new SilverlightVertice(cluster.Edges[order[order.Count - 1]].Position, cluster.Edges[order[0]].Position);
+            SilverlightEdge edge11 = cluster.Edges.Where(x => x.EdgeNumber == order[order.Count - 1]).First();
+            SilverlightEdge edge22 = cluster.Edges.Where(x => x.EdgeNumber == order[0]).First();
+            SilverlightVertice vertice1 = new SilverlightVertice(edge11.Position, edge22.Position);
             vertice1.Color = cluster.Color;
             this.LayoutRoot.Children.Add(vertice1.Line);
         }
@@ -390,47 +406,90 @@ namespace GraphMaker
 
         private List<Cluster> CreateAreas(int nrOfClusters)
         {
+                KMeanClustering clusteringAlgorithm = new KMeanClustering();
 
+                List<Cluster> clusters = clusteringAlgorithm.CreateClusters(_slEdges, nrOfClusters);
+                int counter = 0;
+                foreach (Cluster clust in clusters)
+                {
+                    counter++;
+                    Label lbl = new Label();
+                    lbl.Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 0, 255));
+                    lbl.FontSize = 20;
+                    lbl.Width = 30;
+                    lbl.Height = 30;
+                    lbl.Content = counter.ToString();
+                    lbl.SetValue(Canvas.LeftProperty, clust.ClusterCenter.X);
+                    lbl.SetValue(Canvas.TopProperty, clust.ClusterCenter.Y);
+                    lbl.SetValue(Canvas.ZIndexProperty, 2);
+                    this.LayoutRoot.Children.Add(lbl);
+                }
+
+                return clusters;
+        }
+
+        private List<Cluster> CreateAreasThread(int nrOfClusters)
+        {
             KMeanClustering clusteringAlgorithm = new KMeanClustering();
 
             List<Cluster> clusters = clusteringAlgorithm.CreateClusters(_slEdges, nrOfClusters);
-            int counter =0;
-            foreach(Cluster clust in clusters)
-            {
-                counter++;
-                Label lbl =new Label();
-                lbl.Foreground = new SolidColorBrush(Color.FromArgb(255,0,255,0));
-                lbl.FontSize = 15;
-                lbl.Width = 20;
-                lbl.Height = 20;
-                lbl.Content = counter.ToString();
-                lbl.SetValue(Canvas.LeftProperty, clust.ClusterCenter.X);
-                lbl.SetValue(Canvas.TopProperty, clust.ClusterCenter.Y);
-                lbl.SetValue(Canvas.ZIndexProperty, 2);
-                this.LayoutRoot.Children.Add(lbl);
-            }
 
             return clusters;
         }
 
         private void btnBest_Click(object sender, RoutedEventArgs e)
         {
-            ClearLines();
+
             ClearClusters();
-            CalculateDistancesAndCreateAreasThread();
-            if (NrOfSalesmans <= 1)
+            CalculateDistancesAndCreateAreas();
+            ClearLines();
+            List<int> bestOrder = new List<int>();
+            Dictionary<Cluster, double> lastDistances = new Dictionary<Cluster, double>();
+            Dictionary<Cluster, List<int>> bestOrders = new Dictionary<Cluster, List<int>>();
+
+            double lastDistance = double.MaxValue;
+            for (int i = 0; i < NrOfIterations; i++)
             {
-                List<int> order = annealingForOne.Calculate();
-                DrawLines(order);
-            }
-            else
-            {
-                foreach (Cluster clust in Clusters)
+                if (NrOfSalesmans <= 1)
                 {
-                    List<int> order = clust.Annealing.Calculate();
-                    DrawLines(order, clust);
+
+                    List<int> order = annealingForOne.Calculate();
+                    if (annealingForOne.CurrentDistance < lastDistance)
+                    {
+                        bestOrder =  order;
+                    }
+                    DrawLines(bestOrder);
+
+                    txtBlockDistance.Text = String.Format("{0}", annealingForOne.CurrentDistance);
+                }
+                else
+                {
+
+                    foreach (Cluster clust in Clusters)
+                    {
+                        if(!lastDistances.ContainsKey(clust))
+                            lastDistances.Add(clust,double.MaxValue);
+
+                        if(!bestOrders.ContainsKey(clust))
+                            bestOrders.Add(clust,new List<int>());
+
+
+                        List<int> order = clust.Annealing.Calculate();
+                        if(clust.Annealing.CurrentDistance < lastDistances[clust] )
+                        {
+                            bestOrders[clust] = order;
+                        }
+
+                    }
                 }
             }
+
+            foreach (KeyValuePair<Cluster, List<int>> key in bestOrders)
+            {
+                DrawLines(key.Value, key.Key);
+            }
+
+
         }
 
         private void ClearClusters()
@@ -439,23 +498,32 @@ namespace GraphMaker
                 Clusters.Clear();
         }
 
+        private bool first = true;
+
         private void btnNext_Click(object sender, RoutedEventArgs e)
         {
             ClearLines();
-            CalculateDistancesAndCreateAreas();
-            if (NrOfSalesmans <= 1)
+            if (first)
             {
-                List<int> order = annealingForOne.Calculate(100, false);
-                DrawLines(order);
+                CalculateDistancesAndCreateAreas();
+                first = false;
             }
             else
             {
-                foreach (Cluster clust in Clusters)
+                if (NrOfSalesmans <= 1)
                 {
-                    List<int> order = clust.Annealing.Calculate(100, false);
-                    DrawLines(order, clust);
+                    List<int> order = annealingForOne.Calculate(NrOfIterations, false);
+                    DrawLines(order);
                 }
+                else
+                {
+                    foreach (Cluster clust in Clusters)
+                    {
+                        List<int> order = clust.Annealing.Calculate(NrOfIterations, false);
+                        DrawLines(order, clust);
+                    }
 
+                }
             }
 
         }
@@ -495,6 +563,12 @@ namespace GraphMaker
             tempData = new List<DataObject>();
             alphaData = new List<DataObject>();
 
+            if (_nrOfSalesman >= 2)
+            {
+                Clusters = CreateAreasThread(_nrOfSalesman);
+            }
+
+
             //Temp od 10-1000
             for (int temp = 100; temp < 2000; temp += 100)
             {
@@ -516,7 +590,7 @@ namespace GraphMaker
                         {
                             List<int> order = clust.Annealing.Calculate();
                         }
-                        var dist = Clusters.Average(x => x.Annealing.CurrentDistance);
+                        var dist = Clusters.Sum(x => x.Annealing.CurrentDistance) / _nrOfSalesman;
                         dataObject.Y = dist;
                         tempData.Add(dataObject);
                     }
@@ -530,7 +604,7 @@ namespace GraphMaker
            _worker.ReportProgress(0);
             //1. Alpha od 0.1000 - 0.9999
 
-            for (double alpha = 0.1000; alpha < 0.9999; alpha += 0.01)
+            for (double alpha = 0.950; alpha < 0.999; alpha += 0.001)
             {
 
                 for (int i = 0; i < _statsIterations; i++)
@@ -551,15 +625,61 @@ namespace GraphMaker
                         {
                             List<int> order = clust.Annealing.Calculate();
                         }
-                        var dist = Clusters.Average(x => x.Annealing.CurrentDistance);
+                        var dist = Clusters.Sum(x => x.Annealing.CurrentDistance) / _nrOfSalesman;
                         dataObject.Y = dist;
                         alphaData.Add(dataObject);
                     }
 
                 }
-                _worker.ReportProgress((int)((alpha*100)/0.9999));
+                _worker.ReportProgress((int)((alpha*100)/0.999));
             }
+
+            //for (int alpha = 2; alpha <=20; alpha++)
+            //{
+            //    ClearClusters();
+            //    Clusters = CreateAreasThread(alpha);
+            //    for (int i = 0; i < _statsIterations; i++)
+            //    {
+            //        DataObject dataObject = new DataObject();
+
+            //        dataObject.X = alpha;
+            //        CalculateDistancesAndCreateAreasThread();
+            //        if (_nrOfSalesman <= 1)
+            //        {
+            //            List<int> order = annealingForOne.Calculate();
+            //            dataObject.Y = annealingForOne.CurrentDistance;
+            //            alphaData.Add(dataObject);
+            //        }
+            //        else
+            //        {
+            //            foreach (Cluster clust in Clusters)
+            //            {
+            //                List<int> order = clust.Annealing.Calculate();
+            //            }
+            //            var dist = Clusters.Sum(x => x.Annealing.CurrentDistance)/alpha;
+            //            dataObject.Y = dist;
+            //            alphaData.Add(dataObject);
+            //        }
+
+            //    }
+            //    _worker.ReportProgress((int)((alpha * 100) / 20));
+            //}
         }
+
+        private void btnClustering_Click(object sender, RoutedEventArgs e)
+        {
+          foreach(Cluster c in  CreateAreas(NrOfSalesmans))
+          {
+              c.Color = Common.ColorPallete.GetColor();
+          }
+        }
+
+        private void btnShrinkWrap_Click(object sender, RoutedEventArgs e)
+        {
+            ClearLines();
+            CalculateDistancesAndCreateAreas();
+        }
+        
 
     }
 

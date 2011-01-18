@@ -40,6 +40,8 @@
                     <sdk:Label Height="16" HorizontalAlignment="Left" Margin="622,78,0,0" Name="label7" Content="Distance :" VerticalAlignment="Top" Width="61" />
                     <ProgressBar Height="10" HorizontalAlignment="Right" Margin="0,160,11,0" Name="progressBarMain" VerticalAlignment="Top" Width="789" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="560,78,0,0" Name="txtBoxNrOfIterations" Text="1" VerticalAlignment="Top" Width="56" />
+                    <sdk:Label Content="Max Time :" Height="16" HorizontalAlignment="Left" Margin="622,102,0,0" Name="label8" VerticalAlignment="Top" Width="61" />
+                    <TextBlock Foreground="Red" Height="18" HorizontalAlignment="Left" Margin="683,102,0,0" Name="txtBlockMaxTime" Text="MaxTime" VerticalAlignment="Top" Width="90" />
                 </Grid>
         </Grid>
         </sdk:TabItem>
@@ -54,10 +56,10 @@
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="5*"></RowDefinition>
-                        <RowDefinition Height="5*"></RowDefinition>
+                        <RowDefinition Height="3*"></RowDefinition>
+                        <RowDefinition Height="3*"></RowDefinition>
                     </Grid.RowDefinitions>
-                        <telerik:RadChart Grid.Row="0" Name="chartAlpha">
+                    <telerik:RadChart Grid.Row="0"  Content="Alpha" Name="chartAlpha">
                         <telerik:RadChart.SeriesMappings>
                             <telerik:SeriesMapping LegendLabel="Average">
                                 <telerik:SeriesMapping.SeriesDefinition>
@@ -103,7 +105,7 @@
                             </telerik:SeriesMapping>
                         </telerik:RadChart.SeriesMappings>
                     </telerik:RadChart>
-                        <telerik:RadChart Grid.Row="1" Name="chartTemp" >
+                    <telerik:RadChart Grid.Row="1" Content="Temperature" Name="chartTemp" >
                         <telerik:RadChart.SeriesMappings>
                             <telerik:SeriesMapping LegendLabel="Average">
                                 <telerik:SeriesMapping.SeriesDefinition>

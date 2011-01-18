@@ -94,6 +94,7 @@ namespace GraphMaker
 
         List<DataObject> tempData;
         List<DataObject> alphaData;
+        List<DataObject> clusterData;
 
         private List<Edge> _edges = new List<Edge>();
 
@@ -434,15 +435,27 @@ namespace GraphMaker
 
             List<Cluster> clusters = clusteringAlgorithm.CreateClusters(_slEdges, nrOfClusters);
 
+            foreach (Cluster clust in clusters)
+            {
+                foreach (SilverlightEdge edge in clust.Edges)
+                {
+                    foreach (SilverlightEdge edge1 in clust.Edges)
+                    {
+                        edge.PolarCords.Center(clust.ClusterCenter);
+                    }
+                }
+            }
+
             return clusters;
         }
 
         private void btnBest_Click(object sender, RoutedEventArgs e)
         {
-
+            ClearLabels();
             ClearClusters();
             CalculateDistancesAndCreateAreas();
             ClearLines();
+
             List<int> bestOrder = new List<int>();
             Dictionary<Cluster, double> lastDistances = new Dictionary<Cluster, double>();
             Dictionary<Cluster, List<int>> bestOrders = new Dictionary<Cluster, List<int>>();
@@ -452,19 +465,14 @@ namespace GraphMaker
             {
                 if (NrOfSalesmans <= 1)
                 {
-
                     List<int> order = annealingForOne.Calculate();
                     if (annealingForOne.CurrentDistance < lastDistance)
                     {
                         bestOrder =  order;
                     }
-                    DrawLines(bestOrder);
-
-                    txtBlockDistance.Text = String.Format("{0}", annealingForOne.CurrentDistance);
                 }
                 else
                 {
-
                     foreach (Cluster clust in Clusters)
                     {
                         if(!lastDistances.ContainsKey(clust))
@@ -473,23 +481,53 @@ namespace GraphMaker
                         if(!bestOrders.ContainsKey(clust))
                             bestOrders.Add(clust,new List<int>());
 
-
                         List<int> order = clust.Annealing.Calculate();
                         if(clust.Annealing.CurrentDistance < lastDistances[clust] )
                         {
                             bestOrders[clust] = order;
                         }
-
                     }
                 }
             }
 
-            foreach (KeyValuePair<Cluster, List<int>> key in bestOrders)
+            if (NrOfSalesmans <= 1)
             {
-                DrawLines(key.Value, key.Key);
+                DrawLines(bestOrder);
+                txtBlockDistance.Text = String.Format("{0}", annealingForOne.CurrentDistance);
+                txtBlockMaxTime.Text = String.Format("{0}", annealingForOne.CurrentDistance);
+            }
+            else
+            {
+                double summedDistance = 0;
+                foreach (KeyValuePair<Cluster, List<int>> key in bestOrders)
+                {
+                    DrawLines(key.Value, key.Key);
+                    summedDistance += key.Key.Annealing.CurrentDistance;
+                }
+                txtBlockDistance.Text = String.Format("{0}", summedDistance);
+                txtBlockMaxTime.Text = String.Format("{0}", Clusters.Max(x => x.Annealing.CurrentDistance));
+
             }
 
 
+        }
+
+        private void ClearLabels()
+        {
+            List<Label> labels = new List<Label>();
+            foreach (UIElement element in this.LayoutRoot.Children)
+            {
+                Label label = element as Label;
+                if (label != null)
+                {
+                    labels.Add(label);
+                }
+            }
+
+            foreach (UIElement l in labels)
+            {
+                this.LayoutRoot.Children.Remove(l);
+            }
         }
 
         private void ClearClusters()
@@ -562,6 +600,7 @@ namespace GraphMaker
         {
             tempData = new List<DataObject>();
             alphaData = new List<DataObject>();
+            clusterData = new List<DataObject>();
 
             if (_nrOfSalesman >= 2)
             {
@@ -570,13 +609,14 @@ namespace GraphMaker
 
 
             //Temp od 10-1000
-            for (int temp = 100; temp < 2000; temp += 100)
+            for (int temp = 100; temp < 1000; temp += 100)
             {
                 for (int i = 0; i < _statsIterations; i++)
                 {
                     DataObject dataObject = new DataObject();
 
                     dataObject.X = temp;
+                    _temp = temp;
                     CalculateDistancesAndCreateAreasThread();
                     if (_nrOfSalesman <= 1)
                     {
@@ -597,21 +637,39 @@ namespace GraphMaker
 
                 }
 
-                _worker.ReportProgress(((temp*100) / 2000));
+                _worker.ReportProgress(((temp * 100) / 1000));
             }
 
-                        
-           _worker.ReportProgress(0);
-            //1. Alpha od 0.1000 - 0.9999
 
-            for (double alpha = 0.950; alpha < 0.999; alpha += 0.001)
+            _worker.ReportProgress(0);
+            //1. Alpha od 0.1000 - 0.9999
+            List<double> testedAlphas = new List<double>()
+            {
+                0.1,
+                0.2,
+                0.3,
+                0.4,
+                0.5,
+                0.6,
+                0.7,
+                0.8,
+                0.9,
+                0.99,
+                0.999,
+                0.9999,
+                0.99999
+            };
+
+            int progress = 0;
+            foreach (double d in testedAlphas)
             {
 
                 for (int i = 0; i < _statsIterations; i++)
                 {
                     DataObject dataObject = new DataObject();
 
-                    dataObject.X = alpha;
+                    dataObject.X = d;
+                    _alpha = d;
                     CalculateDistancesAndCreateAreasThread();
                     if (_nrOfSalesman <= 1)
                     {
@@ -631,39 +689,9 @@ namespace GraphMaker
                     }
 
                 }
-                _worker.ReportProgress((int)((alpha*100)/0.999));
+                progress++;
+                _worker.ReportProgress((int)((progress * 100) / testedAlphas.Count));
             }
-
-            //for (int alpha = 2; alpha <=20; alpha++)
-            //{
-            //    ClearClusters();
-            //    Clusters = CreateAreasThread(alpha);
-            //    for (int i = 0; i < _statsIterations; i++)
-            //    {
-            //        DataObject dataObject = new DataObject();
-
-            //        dataObject.X = alpha;
-            //        CalculateDistancesAndCreateAreasThread();
-            //        if (_nrOfSalesman <= 1)
-            //        {
-            //            List<int> order = annealingForOne.Calculate();
-            //            dataObject.Y = annealingForOne.CurrentDistance;
-            //            alphaData.Add(dataObject);
-            //        }
-            //        else
-            //        {
-            //            foreach (Cluster clust in Clusters)
-            //            {
-            //                List<int> order = clust.Annealing.Calculate();
-            //            }
-            //            var dist = Clusters.Sum(x => x.Annealing.CurrentDistance)/alpha;
-            //            dataObject.Y = dist;
-            //            alphaData.Add(dataObject);
-            //        }
-
-            //    }
-            //    _worker.ReportProgress((int)((alpha * 100) / 20));
-            //}
         }
 
         private void btnClustering_Click(object sender, RoutedEventArgs e)

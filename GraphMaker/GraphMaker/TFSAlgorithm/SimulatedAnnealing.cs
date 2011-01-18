@@ -111,11 +111,11 @@ namespace GraphMaker.TFSAlgorithm
                 nextOrder.Add(i);
             }
 
-            int i1 = (int)(rand.Next(EdgesCount - 1));
-            int i2 = (int)(rand.Next(EdgesCount - 1));
-            int aux = nextOrder[i1];
-            nextOrder[i1] = nextOrder[i2];
-            nextOrder[i2] = aux;
+            int index1 = (int)(rand.Next(EdgesCount - 1));
+            int index2 = (int)(rand.Next(EdgesCount - 1));
+            int temp = nextOrder[index1];
+            nextOrder[index1] = nextOrder[index2];
+            nextOrder[index2] = temp;
         }
 
         private  double CalculateDistance(List<int> order, double [,] distanceArray)
